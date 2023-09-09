@@ -35,3 +35,5 @@ Imports:
 LinkingTo: Rcpp
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+URL: https://github.com/Ddey07/SGCTools
+BugReports: https://github.com/Ddey07/SGCTools/issues
