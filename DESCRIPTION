@@ -3,12 +3,7 @@ Type: Package
 Title: Estimation tools for multivariate mixed data and continous/truncated/discrete functional data using Semiparametric Gaussian Copula (SGC)
 Version: 0.1.0
 Authors@R: 
-    c(person("Debangan", "Dey", "ddey1@alumni.jh.edu", role = c("aut", "cre", "cph"),
-           comment = c(ORCID = "0000-0002-2579-5693")),
-    person("Rahul", "Ghosal", "rghosal@columbia.sc.edu", role = c("aut", "ctb"),
-           comment = c(ORCID = "0000-0003-0939-4731")),
-    person("Kathleen", "Merikangas", "meikank@nih.gov", role = c("fnd")),
-    person("Vadim", "Zipunnikov", "vzipunn1@jhu.edu", role = c("ctb")))       
+    person("Debangan", "Dey", "ddey1@alumni.jh.edu", role = c("aut", "cre", "cph"),comment = c(ORCID = "0000-0002-2579-5693"))     
 Maintainer: Debangan Dey <ddey1@alumni.jh.edu>
 Description: (a) Estimates latent correlation for multivariate mixed data types; continuous, truncated, ordinal (any number of categories), and binary, (b) Covariance estimation and functional principal components 
     analysis for continous, truncated, discrete (ordinal/binary) functional data. The methods are described in 
