@@ -8,7 +8,7 @@
 #' @param df An integer denoting the degrees of freedom corresponding to the basis function.
 #' @param T_out If supplied, the estimated covariance and FPCA is returned on this grid of argument values (time-points)
 #' @param npc Prescribed value for the number of principal components. Defaults to 4.
-#' @return \code{fromXtoRmixed} returns
+#' @return \code{fpca.sgc.lat} returns
 #' \itemize{
 #'       \item{cov: }{the estimated m by m covariance matrix}
 #'       \item{efunctions: }{first npc number of eigenfunctions}
