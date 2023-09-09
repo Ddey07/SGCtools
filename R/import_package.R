@@ -7,7 +7,7 @@
 #' @import fMultivar
 #' @import tidyverse
 #' @import mvtnorm
-#' @import Matrix
+#' @importFrom Matrix nearPD
 #' @import refund
 #' @import numDeriv
 #' @import clusterGeneration

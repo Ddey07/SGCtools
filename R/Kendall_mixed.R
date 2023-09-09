@@ -4,7 +4,7 @@
 #' @param X A numeric data matrix (n by p), n is the sample size and p is the number of variables.
 #' @return \code{Kendall_mixed} returns a p by p matrix containing the Kendall's Tau of pairwise variables.
 #' @references
-#' Perreault S., "Efficient inference for Kendall's tau", <arXiv:2206.04019>.
+#' Perreault S., "Efficient inference for Kendall's tau", <https://arxiv.org/abs/2206.04019>.
 #' @export
 #' @example man/examples/fromXtoR_ex.R
 

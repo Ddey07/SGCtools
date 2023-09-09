@@ -39,5 +39,5 @@ R=fromXtoRMixed(X,use.nearPD=TRUE)
 Lhat <-getLatentPreds(X, lat.cov = R$hatR)
 }
 \references{
-Perreault S., "Efficient inference for Kendall's tau", \url{arXiv:2206.04019}.
+Perreault S., "Efficient inference for Kendall's tau", \url{https://arxiv.org/abs/2206.04019}.
 }

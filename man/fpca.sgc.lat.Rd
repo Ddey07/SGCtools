@@ -20,7 +20,7 @@ fpca.sgc.lat(X, type, argvals = NULL, df = 5, T_out = NULL, npc = 4)
 \item{npc}{Prescribed value for the number of principal components. Defaults to 4.}
 }
 \value{
-\code{fromXtoRmixed} returns
+\code{fpca.sgc.lat} returns
 \itemize{
 \item{cov: }{the estimated m by m covariance matrix}
 \item{efunctions: }{first npc number of eigenfunctions}
@@ -77,5 +77,5 @@ image(as.matrix(Sigma_SE), main="Truth")
 image(as.matrix(ff$cov), main="Estimate")
 }
 \references{
-Dey D., Ghosal R., Merikangas K., Zipunnikov V. (2023) "Covariance Estimation and Principal Component Analysis for Mixed-Type Functional Data with application to mHealth in Mood Disorders" \url{arXiv:2205.06868}
+Dey D., Ghosal R., Merikangas K., Zipunnikov V. (2023) "Covariance Estimation and Principal Component Analysis for Mixed-Type Functional Data with application to mHealth in Mood Disorders" \url{https://arxiv.org/abs/2306.15084}
 }

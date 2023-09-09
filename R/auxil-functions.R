@@ -1,5 +1,3 @@
-#' @import Rcpp
-
 # import function from namespace
 fromKtoR_mixed = getFromNamespace("fromKtoR_mixed", "mixedCCA")
 

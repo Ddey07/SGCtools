@@ -12,13 +12,13 @@
 #'       \item{hatRprime: }{if (deriv = TRUE), returns the pointwise derivative of the bridging function with respect to latent correlation}
 #' }
 #' @references
-#' Dey ., Zipunnikov V. (2022) "Semiparametric Gaussian Copula Regression modeling for Mixed Data Types (SGCRM)" <arXiv:2205.06868>
+#' Dey ., Zipunnikov V. (2022) "Semiparametric Gaussian Copula Regression modeling for Mixed Data Types (SGCRM)" <https://arxiv.org/abs/2205.06868>
 #'
 #' Fan J., Liu H., Ning Y. and Zou H. (2017) "High dimensional semiparametric latent graphicalmodel for mixed data" <doi:10.1111/rssb.12168>.
 #'
 #' Yoon G., Carroll R.J. and Gaynanova I. (2020) "Sparse semiparametric canonical correlation analysis for data of mixed types" <doi:10.1093/biomet/asaa007>.
 #'
-#' Yoon G., Mueller C.L., Gaynanova I. (2020) "Fast computation of latent correlations" <arXiv:2006.13875>.
+#' Yoon G., Mueller C.L., Gaynanova I. (2020) "Fast computation of latent correlations" <https://arxiv.org/abs/2006.13875>.
 #'
 #' @export
 #' @import stats

@@ -7,7 +7,7 @@
 #' @param impute.missing A logical variable indicating whether the missing data will be imputed with Missing at Random assumptions or not.
 #' @return \code{getLatentPreds} returns a n by p matrix containing continuous predictions of observed mixed latent variables.
 #' @references
-#' Dey ., Zipunnikov V. (2022) "Semiparametric Gaussian Copula Regression modeling for Mixed Data Types (SGCRM)" <arXiv:2205.06868>
+#' Dey ., Zipunnikov V. (2022) "Semiparametric Gaussian Copula Regression modeling for Mixed Data Types (SGCRM)" <https://arxiv.org/abs/2205.06868>
 #' @export
 #' @import stats
 #' @importFrom Matrix nearPD

@@ -45,5 +45,5 @@ R=fromXtoRMixed(X,use.nearPD=TRUE)
 Lhat <-getLatentPreds(X, lat.cov = R$hatR)
 }
 \references{
-Dey ., Zipunnikov V. (2022) "Semiparametric Gaussian Copula Regression modeling for Mixed Data Types (SGCRM)" \url{arXiv:2205.06868}
+Dey ., Zipunnikov V. (2022) "Semiparametric Gaussian Copula Regression modeling for Mixed Data Types (SGCRM)" \url{https://arxiv.org/abs/2205.06868}
 }

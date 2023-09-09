@@ -15,7 +15,7 @@
 #'       \item{evalues: }{first npc number of eigenvalues}
 #' }
 #' @references
-#' Dey D., Ghosal R., Merikangas K., Zipunnikov V. (2023) "Covariance Estimation and Principal Component Analysis for Mixed-Type Functional Data with application to mHealth in Mood Disorders" <arXiv:2205.06868>
+#' Dey D., Ghosal R., Merikangas K., Zipunnikov V. (2023) "Covariance Estimation and Principal Component Analysis for Mixed-Type Functional Data with application to mHealth in Mood Disorders" <https://arxiv.org/abs/2306.15084>
 #' @export
 #' @import stats
 #' @importFrom Matrix nearPD
