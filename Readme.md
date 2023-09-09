@@ -1,4 +1,8 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/Ddey07/SGCTools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Ddey07/SGCTools/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
 
 # SGCTools: Estimation tools for multivariate mixed data and continous/truncated/discrete functional data using Semiparametric Gaussian Copula (SGC)
 
