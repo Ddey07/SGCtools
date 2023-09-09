@@ -2,7 +2,7 @@ Package: SGCTools
 Type: Package
 Title: Estimation tools for multivariate mixed data and continous/truncated/discrete functional data using Semiparametric Gaussian Copula (SGC)
 Version: 0.1.0
-Authors: Debangan Dey
+Author: Debangan Dey, Rahul Ghosal, Kathleen Merikangas, Vadim Zipunnikov
 Maintainer: Debangan Dey <ddey1@alumni.jh.edu>
 Description: (a) Estimates latent correlation for multivariate mixed data types; continuous, truncated, ordinal (any number of categories), and binary, (b) Covariance estimation and functional principal components 
     analysis for continous, truncated, discrete (ordinal/binary) functional data. The methods are described in 
