@@ -204,7 +204,7 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4){
     Chat.grid <- nearPD(Chat2,corr=TRUE,maxit=1000)$mat
     #Chat.grid2 <- nearPD(Chat2,corr=TRUE,maxit=10000, posd.tol = 1e-03)$mat
     ee = eigen(Chat.grid)
-    res = list(cov = Chat.grid, efunctions = ee$vectors[,1:npc], evalues = ee$values[1:npc])
+    res = list(cov = as.matrix(Chat.grid), efunctions = ee$vectors[,1:npc], evalues = ee$values[1:npc])
   }
   return(res)
 }
