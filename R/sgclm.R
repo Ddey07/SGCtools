@@ -102,9 +102,11 @@ signif = symnum(pv,
                 cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1),
                 symbols = c("***", "**", "*", ".", " "))
 
-res_df = data.frame("Estimate" = beta_est, "Std.Error" = sd_beta, 't value' = tv, "Pr(>|t|)" = pv, "Signif"= signif)
+if(is.null(type)){
+type = preprocess_data(Xd)$type}
+res_df = data.frame("Type" = type[-1], "Estimate" = beta_est, "Std.Error" = sd_beta, 't value' = tv, "Pr(>|t|)" = pv, "Signif"= signif)
 
-names(res_df) = c("Estimate", "Std.Error","t value","Pr(>|t|)","")
+names(res_df) = c("Type", "Estimate", "Std.Error","t value","Pr(>|t|)","")
 rownames(res_df) = names(Xd)[-1]
 
 return(list(coef= res_df, legend = attr(signif,"legend")))

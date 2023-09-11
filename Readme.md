@@ -61,6 +61,12 @@ z = y
 z[z>delta]=1
 z[z<=delta]=0
 
+# calculate unsmoothed latent correlation matrix without functional assumption
+R = fromXtoRMixed(X=z,use.nearPD=TRUE)
+
+# calculate unsmoothed multivariate latent principal component analysis using SGC
+pc_sgc = princomp(covmat= R$hatR,cor=TRUE)
+
 # run fpca.sgc.lat to get functional principal component analysis of binary data
 ff = fpca.sgc.lat(X=z,type="bin",argvals = tp, df= 4)
 
