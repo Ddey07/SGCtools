@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
   [![R-CMD-check](https://github.com/Ddey07/SGCTools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Ddey07/SGCTools/actions/workflows/R-CMD-check.yaml)
   <!-- badges: end -->
 
-# SGCTools: Estimation tools for multivariate mixed data and continous/truncated/discrete functional data using Semiparametric Gaussian Copula (SGC)
+# SGCTools: Analysis tools for multivariate mixed data and continous/truncated/discrete functional data using Semiparametric Gaussian Copula (SGC)
 
 The R package `SGCTools` (a) estimates latent correlation for multivariate mixed data types; continuous, truncated, ordinal (any number of categories), and binary, (b) performs covariance estimation and functional principal components 
     analysis for continous, truncated, discrete (ordinal/binary) functional data. The methods are described in 
@@ -71,6 +71,12 @@ y = mvtnorm::rmvnorm(n,sigma=Sigma_SE)
 z = y
 z[z>delta]=1
 z[z<=delta]=0
+
+# calculate unsmoothed latent correlation matrix without functional assumption
+R = fromXtoRMixed(X=z,use.nearPD=TRUE)
+
+# calculate unsmoothed multivariate latent principal component analysis using SGC
+pc_sgc = princomp(covmat= R$hatR,cor=TRUE)
 
 # run fpca.sgc.lat to get functional principal component analysis of binary data
 ff = fpca.sgc.lat(X=z,type="bin",argvals = tp, df= 4)

@@ -4,7 +4,7 @@
 [![R-CMD-check](https://github.com/Ddey07/SGCTools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Ddey07/SGCTools/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-# SGCTools: Estimation tools for multivariate mixed data and continous/truncated/discrete functional data using Semiparametric Gaussian Copula (SGC)
+# SGCTools: Analysis tools for multivariate mixed data and continous/truncated/discrete functional data using Semiparametric Gaussian Copula (SGC)
 
 The R package `SGCTools` (a) estimates latent correlation for
 multivariate mixed data types; continuous, truncated, ordinal (any

@@ -76,6 +76,9 @@ fromXtoRMixed=function(X,type=NULL,use.nearPD= TRUE,deriv=FALSE){
     hatR=nearPD(hatR, corr=TRUE, maxit=1000)$mat
   }
 
+  # convert hatR to matrix object
+  hatR= as.matrix(hatR)
+
   if(deriv==TRUE){
     return(list(hatR=hatR,hatRprime=hatRprime))
   } else {
