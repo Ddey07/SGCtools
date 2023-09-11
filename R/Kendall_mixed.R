@@ -1,6 +1,6 @@
 #' @title Fast calculation of Kendall's Tau from observed data
 #'
-#' @description Calculate Kendall's Tau using fast approach of counting swaps by Samuel Perrault. Updated to handle missing data. If missing, Kendall's Tau is calculated based on pairwise complete observations.
+#' @description Calculate Kendall's Tau using fast approach of counting swaps by Samuel Perrault, takes O(nlogn) time. Updated to handle missing data. If missing, Kendall's Tau is calculated based on pairwise complete observations.
 #' @param X A numeric data matrix (n by p), n is the sample size and p is the number of variables.
 #' @return \code{Kendall_mixed} returns a p by p matrix containing the Kendall's Tau of pairwise variables.
 #' @references
