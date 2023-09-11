@@ -9,6 +9,11 @@
 #' @example man/examples/fromXtoR_ex.R
 
 Kendall_mixed = function(X){
+  # Check if X is a matrix or data frame
+  if (!is.data.frame(X) && !is.matrix(X)) {
+    stop("X must be a data frame or a matrix.")
+  }
+
   CDN <- conc_ties(X)
   C <- CDN$C
   D <-  CDN$D
@@ -16,5 +21,6 @@ Kendall_mixed = function(X){
   C_sum <- apply(C, c(2,3), function(x){sum(x, na.rm = TRUE)})
   D_sum <- apply(D, c(2,3), function(x){sum(x, na.rm = TRUE)})
   T2 <- (C_sum - D_sum)/(2*choose(N,2))
+  diag(T2) <- 1
   return(T2)
 }

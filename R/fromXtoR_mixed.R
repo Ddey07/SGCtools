@@ -25,6 +25,11 @@
 #' @importFrom Matrix nearPD
 #' @example man/examples/fromXtoR_ex.R
 fromXtoRMixed=function(X,type=NULL,use.nearPD= TRUE,deriv=FALSE){
+  # Check if X is a matrix or data frame
+  if (!is.data.frame(X) && !is.matrix(X)) {
+    stop("X must be a data frame or a matrix.")
+  }
+
   n = nrow(X)
   p = ncol(X)
 
