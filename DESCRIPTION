@@ -2,7 +2,21 @@ Package: SGCTools
 Type: Package
 Title: Analysis tools for multivariate mixed data and continous/truncated/discrete functional data using Semiparametric Gaussian Copula (SGC)
 Version: 1.1.2
-Author: Debangan Dey, Rahul Ghosal, Kathleen Merikangas, Vadim Zipunnikov
+Authors@R: c(
+    person(given = "Debangan",
+           family = "Dey",
+           role = c("aut","cre"),
+           email = "ddey1@alumni.jh.edu",
+           comment = c(ORCID = "0000-0002-2579-5693")),
+    person(given = "Rahul",
+           family = "Ghosal",
+           role = c("aut"),
+           email = "rghosal@mailbox.sc.edu",
+           comment = c(ORCID = "0000-0003-0939-4731")),
+    person(given = "Vadim",
+           family = "Zipunnikov",
+           role = c("ctb"),
+           email = "vzipunn1@jhu.edu"))
 Maintainer: Debangan Dey <ddey1@alumni.jh.edu>
 Description: (a) Estimates latent correlation for multivariate mixed data types; continuous, truncated, ordinal (any number of categories), and binary, (b) Covariance estimation and functional principal components 
     analysis for continous, truncated, discrete (ordinal/binary) functional data. The methods are described in 
