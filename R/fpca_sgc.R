@@ -8,11 +8,14 @@
 #' @param df An integer denoting the degrees of freedom corresponding to the basis function.
 #' @param T_out If supplied, the estimated covariance and FPCA is returned on this grid of argument values (time-points)
 #' @param npc Prescribed value for the number of principal components. Defaults to 4.
+#' @param scores A logical variable indicating if the user wants to return FPC scores or not.
+#' @param impute A logical variable indicating whether missing values should be imputed before calculating FPC scores.
 #' @return \code{fpca.sgc.lat} returns
 #' \itemize{
 #'       \item{cov: }{the estimated m by m covariance matrix}
 #'       \item{efunctions: }{first npc number of eigenfunctions}
 #'       \item{evalues: }{first npc number of eigenvalues}
+#'       \item{scores: }{first npc number of PC scores, if \code{scores == TRUE}}
 #' }
 #' @references
 #' Dey D., Ghosal R., Merikangas K., Zipunnikov V. (2023) "Covariance Estimation and Principal Component Analysis for Mixed-Type Functional Data with application to mHealth in Mood Disorders" <https://arxiv.org/abs/2306.15084>
@@ -21,7 +24,7 @@
 #' @importFrom Matrix nearPD
 #' @example man/examples/fpca_sgc_ex.R
 
-fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4){
+fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scores = FALSE, impute=FALSE){
 
   # Check if X is a data frame or matrix
   if (!is.matrix(X)) {
@@ -179,17 +182,19 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4){
   uhat.nls[lower.tri(uhat.nls,diag=TRUE)] = coef(summary(ns1))[,1]
   uhat.nls[upper.tri(uhat.nls)] = t(uhat.nls)[upper.tri(uhat.nls)]
 
+  # build correlation matrix on original scale
+  Chat1 <- outer(argvals,argvals,Chat,u=uhat.nls, bs= bbasisT)
+  Chat2 <- ginv(Chat1)
+  diag(Chat2) <- 1
+  Chat.grid0 <- nearPD(Chat2,corr=TRUE,maxit=10000)$mat
+  Chat.grid <- Chat.grid0
+  #Chat.grid.original <- Chat.grid2
+  ee = eigen(Chat.grid)
+  res = list(cov = Chat.grid, efunctions = ee$vectors[,1:npc], evalues = ee$values[1:npc])
+
+
   #get smooth covariance matrix
-  if(is.null(T_out)){
-    # build correlation matrix on original scale
-    Chat1 <- outer(argvals,argvals,Chat,u=uhat.nls, bs= bbasisT)
-    Chat2 <- ginv(Chat1)
-    diag(Chat2) <- 1
-    Chat.grid <- nearPD(Chat2,corr=TRUE,maxit=10000)$mat
-    #Chat.grid.original <- Chat.grid2
-    ee = eigen(Chat.grid)
-    res = list(cov = Chat.grid, efunctions = ee$vectors[,1:npc], evalues = ee$values[1:npc])
-  } else {
+  if(!is.null(T_out)){
     T1 = T_out
     knotsT = seq(min(T1),max(T1),l=df-2)
     norder = 4
@@ -205,6 +210,13 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4){
     #Chat.grid2 <- nearPD(Chat2,corr=TRUE,maxit=10000, posd.tol = 1e-03)$mat
     ee = eigen(Chat.grid)
     res = list(cov = as.matrix(Chat.grid), efunctions = ee$vectors[,1:npc], evalues = ee$values[1:npc])
+  }
+
+  # if we need to report PC scores
+  L01 = getLatentPreds(X,type=rep(type,m), lat.cov.est = Chat.grid0, impute.missing = impute)
+  fpca1 = fpca.sc(L01, argvals=argvals,npc=npc,var=TRUE)
+  if(scores==TRUE){
+    res$scores = fpca1$scores
   }
   return(res)
 }
