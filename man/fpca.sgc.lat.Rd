@@ -4,7 +4,16 @@
 \alias{fpca.sgc.lat}
 \title{Functional principal component analysis of continuous, truncated and discrete functional data}
 \usage{
-fpca.sgc.lat(X, type, argvals = NULL, df = 5, T_out = NULL, npc = 4)
+fpca.sgc.lat(
+  X,
+  type,
+  argvals = NULL,
+  df = 5,
+  T_out = NULL,
+  npc = 4,
+  scores = FALSE,
+  impute = FALSE
+)
 }
 \arguments{
 \item{X}{A numeric data matrix (n by m), n is the sample size and m is the number of time-points. Binary values must be coded as 0, 1. Ordinal values with l ordered categories must be coded as 0, 1, 2, ... , (l-1).}
@@ -18,6 +27,10 @@ fpca.sgc.lat(X, type, argvals = NULL, df = 5, T_out = NULL, npc = 4)
 \item{T_out}{If supplied, the estimated covariance and FPCA is returned on this grid of argument values (time-points)}
 
 \item{npc}{Prescribed value for the number of principal components. Defaults to 4.}
+
+\item{scores}{A logical variable indicating if the user wants to return FPC scores or not.}
+
+\item{impute}{A logical variable indicating whether missing values should be imputed before calculating FPC scores.}
 }
 \value{
 \code{fpca.sgc.lat} returns
@@ -25,6 +38,7 @@ fpca.sgc.lat(X, type, argvals = NULL, df = 5, T_out = NULL, npc = 4)
 \item{cov: }{the estimated m by m covariance matrix}
 \item{efunctions: }{first npc number of eigenfunctions}
 \item{evalues: }{first npc number of eigenvalues}
+\item{scores: }{first npc number of PC scores, if \code{scores == TRUE}}
 }
 }
 \description{
