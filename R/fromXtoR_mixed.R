@@ -73,7 +73,7 @@ fromXtoRMixed=function(X,type=NULL,use.nearPD= TRUE,deriv=FALSE){
     }
 
   if(use.nearPD==TRUE){
-    hatR=nearPD(hatR, corr=TRUE, maxit=1000)$mat
+    hatR=nearPD(hatR, corr=TRUE, maxit=1000, posd.tol = 1e-3)$mat
   }
 
   # convert hatR to matrix object
