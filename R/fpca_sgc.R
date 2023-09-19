@@ -15,6 +15,7 @@
 #'       \item{cov: }{the estimated m by m covariance matrix}
 #'       \item{efunctions: }{first npc number of eigenfunctions}
 #'       \item{evalues: }{first npc number of eigenvalues}
+#'       \item{latent: }{predictions of latent continuous trajectories, if \code{scores == TRUE}}
 #'       \item{scores: }{first npc number of PC scores, if \code{scores == TRUE}}
 #' }
 #' @references
@@ -212,10 +213,12 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
     res = list(cov = as.matrix(Chat.grid), efunctions = ee$vectors[,1:npc], evalues = ee$values[1:npc])
   }
 
-  # if we need to report PC scores
-  L01 = getLatentPreds(X,type=rep(type,m), lat.cov.est = Chat.grid0, impute.missing = impute)
-  fpca1 = fpca.sc(L01, argvals=argvals,npc=npc,var=TRUE)
+
   if(scores==TRUE){
+    # if we need to report PC scores
+    L01 = getLatentPreds(X,type=rep(type,m), lat.cov.est = Chat.grid0, impute.missing = impute)
+    fpca1 = fpca.sc(L01, argvals=argvals,npc=npc,var=TRUE)
+    res$latent = L01
     res$scores = fpca1$scores
   }
   return(res)
