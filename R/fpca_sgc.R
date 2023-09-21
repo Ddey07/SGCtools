@@ -191,6 +191,7 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
   Chat.grid <- Chat.grid0
   #Chat.grid.original <- Chat.grid2
   ee = eigen(Chat.grid)
+  ee0 = ee
   res = list(cov = Chat.grid, efunctions = ee$vectors[,1:npc], evalues = ee$values[1:npc])
 
 
@@ -210,16 +211,26 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
     Chat.grid <- nearPD(Chat2,corr=TRUE,maxit=1000,posd.tol = 1e-03)$mat
     #Chat.grid2 <- nearPD(Chat2,corr=TRUE,maxit=10000, posd.tol = 1e-03)$mat
     ee = eigen(Chat.grid)
-    res = list(cov = as.matrix(Chat.grid), efunctions = ee$vectors[,1:npc], evalues = ee$values[1:npc])
+    res = list(cov = as.matrix(Chat.grid0), efunctions = ee$vectors[,1:npc], evalues = ee$values[1:npc])
   }
 
+  # check if data is dense or sparse (missing or not)
+  dense = !any(is.na(X))
 
-  if(scores==TRUE){
-    # if we need to report PC scores
-    L01 = getLatentPreds(X,type=rep(type,m), lat.cov.est = Chat.grid0, impute.missing = impute)
-    fpca1 = fpca.sc(L01, argvals=argvals,npc=npc,var=TRUE)
+
+  # if we need to report PC scores
+  if(scores==TRUE & impute == TRUE & dense == FALSE){
+    L01 = getLatentPreds(X,type=rep(type,m), lat.cov.est = Chat.grid0, impute.missing = TRUE)
     res$latent = L01
-    res$scores = fpca1$scores
+    res$scores = L01 %*% ee0$vectors[,1:npc]
+  } else if(scores == TRUE & dense == TRUE){
+    L01 = getLatentPreds(X,type=rep(type,m), lat.cov.est = Chat.grid0, impute.missing = FALSE)
+    res$latent = L01
+    res$scores = L01 %*% ee0$vectors[,1:npc]
+  }else if(scores==TRUE & impute == FALSE & dense == FALSE){
+    L01 = getLatentPreds(X,type=rep(type,m), lat.cov.est = Chat.grid0, impute.missing = FALSE)
+    res$latent = L01
+    res$scores = t(sapply(1:n,function(i){sub= which(!is.na(X[i,])); cov_sub = Chat.grid0[sub,sub]; as.numeric(diag(ee0$values[1:npc]) %*% t(ee0$vectors[sub,1:npc]) %*% solve(cov_sub) %*% L01[i,sub])}))
   }
   return(res)
 }
