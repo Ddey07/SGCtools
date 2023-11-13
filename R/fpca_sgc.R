@@ -7,12 +7,14 @@
 #' @param argvals A vector of length m denoting the argument values of the functions. If NULL, we default it to an equidistant grid from 0 to 1.
 #' @param df An integer denoting the degrees of freedom corresponding to the basis function.
 #' @param T_out If supplied, the estimated covariance and FPCA is returned on this grid of argument values (time-points)
+#' @param min_no_pairs The minimum number of pairs of observations used to calculate Kendall's Tau (otherwise report NA)
 #' @param npc Prescribed value for the number of principal components. Defaults to 4.
 #' @param scores A logical variable indicating if the user wants to return FPC scores or not.
 #' @param impute A logical variable indicating whether missing values should be imputed before calculating FPC scores.
 #' @return \code{fpca.sgc.lat} returns
 #' \itemize{
 #'       \item{cov: }{the estimated m by m covariance matrix}
+#'       \item{cov_out:}{If T_out is provided, the output covariance matrix calculated on the T_out grid}
 #'       \item{efunctions: }{first npc number of eigenfunctions}
 #'       \item{evalues: }{first npc number of eigenvalues}
 #'       \item{latent: }{predictions of latent continuous trajectories, if \code{scores == TRUE}}
@@ -25,7 +27,7 @@
 #' @importFrom Matrix nearPD
 #' @example man/examples/fpca_sgc_ex.R
 
-fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scores = FALSE, impute=FALSE){
+fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scores = FALSE, impute=FALSE, min_no_pairs=30){
 
   # Check if X is a data frame or matrix
   if (!is.matrix(X)) {
@@ -71,14 +73,23 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
 
   # Create data frame to solve the non-linear list squares problem
   if(type=="bin"){
-    fjl.df <- function(j,l,data=X){
-      Tj= bs.argvals[j,]
-      Tl=bs.argvals[l,]
-      zratioj = mean(data[,j]==0, na.rm=TRUE)
-      zratiol=mean(data[,l]==0,na.rm=TRUE)
-      tjl <- Kendall_mixed(cbind(data[,j],data[,l]))[1,2]
+    fjl.df <- function(j, l, data = X) {
+      Tj = bs.argvals[j, ]
+      Tl = bs.argvals[l, ]
+      zratioj = mean(data[, j] == 0, na.rm = TRUE)
+      zratiol = mean(data[, l] == 0, na.rm = TRUE)
+      # count number of observations
+      njl <- sum(!is.na(data[,j]*data[,l]))
 
-      return(c(k=tjl, Tj, Tl, dj=zratioj, dl=zratiol))
+      if(njl > min_no_pairs){
+
+        tjl <- tryCatch(Kendall_mixed(cbind(data[,j],data[,l]))[1,2], error=function(e) NA)
+
+
+        return(c(k=tjl, Tj, Tl, dj= zratioj, dl= zratiol))}
+      else{
+        return(c(k=NA, Tj, Tl, dj= zratioj, dl= zratiol))
+      }
     }
 
     # fix bridging functions and create NLS formula
@@ -87,23 +98,32 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
     obj_df_colnames <- c("k",paste0("Tj",1:ncol(bs.argvals)), paste0("Tl",1:ncol(bs.argvals)),"dj", "dl")
 
   } else if(type == "ord"){
-    fjl.df <- function(j,l,data=X){
-      Tj= bs.argvals[j,]
-      Tl=bs.argvals[l,]
-
-      # categories for j
-      cats_j <- sort(unique(na.omit(data[,j])))
-      hatdelta_j <- unlist(lapply(cats_j,function(x){qnorm(1-mean(data[,j]>=x, na.rm=TRUE))}))[-1]
+    fjl.df <- function(j, l, data = X) {
+      Tj = bs.argvals[j, ]
+      Tl = bs.argvals[l, ]
+      cats_j <- sort(unique(na.omit(data[, j])))
+      hatdelta_j <- unlist(lapply(cats_j, function(x) {
+        qnorm(1 - mean(data[, j] >= x, na.rm = TRUE))
+      }))[-1]
       ncats_j = length(cats_j)
-
-      # categories for l
-      cats_l <- sort(unique(na.omit(data[,l])))
-      hatdelta_l <- unlist(lapply(cats_l,function(x){qnorm(1-mean(data[,l]>=x, na.rm=TRUE))}))[-1]
+      cats_l <- sort(unique(na.omit(data[, l])))
+      hatdelta_l <- unlist(lapply(cats_l, function(x) {
+        qnorm(1 - mean(data[, l] >= x, na.rm = TRUE))
+      }))[-1]
       ncats_l = length(cats_l)
 
-      tjl <- Kendall_mixed(cbind(data[,j],data[,l]))[1,2]
+      # count number of observations
+      njl <- sum(!is.na(data[,j]*data[,l]))
 
-      return(c(k=tjl, Tj, Tl, hatdelta_j, hatdelta_l))
+      if(njl > min_no_pairs){
+
+        tjl <- tryCatch(Kendall_mixed(cbind(data[,j],data[,l]))[1,2], error=function(e) NA)
+
+
+        return(c(k=tjl, Tj, Tl, hatdelta_j, hatdelta_l))}
+      else{
+        return(c(k=NA, Tj, Tl, hatdelta_j, hatdelta_l))
+      }
     }
 
     # fix bridging functions and create NLS formula
@@ -123,14 +143,23 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
     obj_df_colnames <- c("k", paste0("Tj",1:ncol(bs.argvals)), paste0("Tl",1:ncol(bs.argvals)),paste0("dj",1:ncutoff), paste0("dl",1:ncutoff))
 
   } else if (type == "trunc"){
-    fjl.df <- function(j,l,data=X){
-      Tj= bs.argvals[j,]
-      Tl=bs.argvals[l,]
-      zratioj = mean(data[,j]==0)
-      zratiol=mean(data[,l]==0)
-      tjl <- Kendall_mixed(cbind(data[,j],data[,l]))[1,2]
+    fjl.df <- function(j, l, data = X) {
+      Tj = bs.argvals[j, ]
+      Tl = bs.argvals[l, ]
+      zratioj = mean(data[, j] == 0)
+      zratiol = mean(data[, l] == 0)
+      # count number of observations
+      njl <- sum(!is.na(data[,j]*data[,l]))
 
-      return(c(k=tjl, Tj, Tl, dj=zratioj, dl=zratiol))
+      if(njl > min_no_pairs){
+
+        tjl <- tryCatch(Kendall_mixed(cbind(data[,j],data[,l]))[1,2], error=function(e) NA)
+
+
+        return(c(k=tjl, Tj, Tl, dj= zratioj, dl= zratiol))}
+      else{
+        return(c(k=NA, Tj, Tl, dj= zratioj, dl= zratiol))
+      }
     }
 
     # fix bridging functions and create NLS formula
@@ -141,12 +170,21 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
   }
 
   # Get initial estimates assuming continuous data
-  fjl.df.cont <- function(j,l,data=X){
-    Tj= bs.argvals[j,]
-    Tl=bs.argvals[l,]
-    tjl <- Kendall_mixed(cbind(data[,j],data[,l]))[1,2]
+  fjl.df.cont <- function(j, l, data = X) {
+    Tj = bs.argvals[j, ]
+    Tl = bs.argvals[l, ]
+    # count number of observations
+    njl <- sum(!is.na(data[,j]*data[,l]))
 
-    return(c(k=tjl, Tj, Tl))
+    if(njl > min_no_pairs){
+
+      tjl <- tryCatch(Kendall_mixed(cbind(data[,j],data[,l]))[1,2], error=function(e) NA)
+
+
+      return(c(k=tjl, Tj, Tl))}
+    else{
+      return(c(k=NA, Tj, Tl))
+    }
   }
 
   # continuous bridging function
@@ -211,7 +249,8 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
     Chat.grid <- nearPD(Chat2,corr=TRUE,maxit=1000,posd.tol = 1e-03)$mat
     #Chat.grid2 <- nearPD(Chat2,corr=TRUE,maxit=10000, posd.tol = 1e-03)$mat
     ee = eigen(Chat.grid)
-    res = list(cov = as.matrix(Chat.grid0), efunctions = ee$vectors[,1:npc], evalues = ee$values[1:npc])
+    res = list(cov = as.matrix(Chat.grid0), cov_out = as.matrix(Chat.grid), efunctions = ee$vectors[,
+                                                                                                    1:npc], evalues = ee$values[1:npc])
   }
 
   # check if data is dense or sparse (missing or not)
