@@ -12,7 +12,8 @@ fpca.sgc.lat(
   T_out = NULL,
   npc = 4,
   scores = FALSE,
-  impute = FALSE
+  impute = FALSE,
+  min_no_pairs = 30
 )
 }
 \arguments{
@@ -31,13 +32,17 @@ fpca.sgc.lat(
 \item{scores}{A logical variable indicating if the user wants to return FPC scores or not.}
 
 \item{impute}{A logical variable indicating whether missing values should be imputed before calculating FPC scores.}
+
+\item{min_no_pairs}{The minimum number of pairs of observations used to calculate Kendall's Tau (otherwise report NA)}
 }
 \value{
 \code{fpca.sgc.lat} returns
 \itemize{
 \item{cov: }{the estimated m by m covariance matrix}
+\item{cov_out:}{If T_out is provided, the output covariance matrix calculated on the T_out grid}
 \item{efunctions: }{first npc number of eigenfunctions}
 \item{evalues: }{first npc number of eigenvalues}
+\item{latent: }{predictions of latent continuous trajectories, if \code{scores == TRUE}}
 \item{scores: }{first npc number of PC scores, if \code{scores == TRUE}}
 }
 }
