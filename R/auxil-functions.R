@@ -102,9 +102,10 @@ bridgeF_bb <- function (r, zratio1, zratio2)
 # continuous - ord bridging function
 bridge_co = function(t,delta,...){
   M <- 12
+  delta <- c(delta, M)
   S <- cbind(c(1,0,t/sqrt(2)),c(0,1,-t/sqrt(2)), c(t/sqrt(2),-t/sqrt(2),1))
   l <- length(delta)
-  term1 <- sum(sapply(1:(l-1), function(x){if(delta[x+1]==Inf){delta[x+1] <- M}; 4*pmvnorm(upper=c(delta[x],delta[x+1],0),sigma=S,algorithm = Miwa()) - 2*pnorm(delta[x])*pnorm(delta[x+1])}))
+  term1 <- sum(sapply(1:(l-1), function(x){4*pmvnorm(upper=c(delta[x],delta[x+1],0),sigma=S,algorithm = Miwa()) - 2*pnorm(delta[x])*pnorm(delta[x+1])}))
   return(term1)
 }
 
@@ -211,7 +212,7 @@ fromXtoR_bivariate=function(X1,X2,PR,type1="ord",deriv=TRUE,type2="ord",tol=1e-6
   }
   else if((type1=="cont" & type2=="ord") | (type2=="cont" & type1=="ord")){
     #cats <- sort(unique(na.omit(X[,2])))
-      hatdelta1 <- PR[[2]]$cutoff[-1]
+      hatdelta1 <- PR[[2]]$cutoff[-c(1,length(PR[[2]]$cutoff))]
       fitf_co <- function(t){(bridge_co(t,hatdelta1)-K)^2}
       R=optimize(fitf_co,c(-1,1))$minimum
       if(deriv==TRUE){
