@@ -225,7 +225,7 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
   Chat1 <- outer(argvals,argvals,Chat,u=uhat.nls, bs= bbasisT)
   Chat2 <- ginv(Chat1)
   diag(Chat2) <- 1
-  Chat.grid0 <- nearPD(Chat2,corr=TRUE,maxit=10000,posd.tol = 1e-03)$mat
+  Chat.grid0 <- nearPD(Chat2,corr=TRUE,maxit=10000,posd.tol = 1e-02)$mat
   Chat.grid <- Chat.grid0
   #Chat.grid.original <- Chat.grid2
   ee = eigen(Chat.grid)
@@ -246,7 +246,7 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
     Chat1 <- outer(T1,T1,Chat,u=uhat.nls,bs= bbasisT)
     Chat2 <- ginv(Chat1)
     diag(Chat2) <- 1
-    Chat.grid <- nearPD(Chat2,corr=TRUE,maxit=1000,posd.tol = 1e-03)$mat
+    Chat.grid <- nearPD(Chat2,corr=TRUE,maxit=1000,posd.tol = 1e-02)$mat
     #Chat.grid2 <- nearPD(Chat2,corr=TRUE,maxit=10000, posd.tol = 1e-03)$mat
     ee = eigen(Chat.grid)
     res = list(cov = as.matrix(Chat.grid0), cov_out = as.matrix(Chat.grid), efunctions = ee$vectors[,
