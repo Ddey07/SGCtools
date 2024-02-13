@@ -230,7 +230,7 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
   #Chat.grid.original <- Chat.grid2
   ee = eigen(Chat.grid)
   ee0 = ee
-  res = list(cov = Chat.grid, efunctions = ee$vectors[,1:npc], evalues = ee$values[1:npc])
+  res = list(cov = Chat.grid, efunctions = ee$vectors[,1:npc], evalues = ee$values[1:npc], vcov=vcov(ns1), par=ns1)
 
 
   #get smooth covariance matrix
@@ -250,7 +250,7 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
     #Chat.grid2 <- nearPD(Chat2,corr=TRUE,maxit=10000, posd.tol = 1e-03)$mat
     ee = eigen(Chat.grid)
     res = list(cov = as.matrix(Chat.grid0), cov_out = as.matrix(Chat.grid), efunctions = ee$vectors[,
-                                                                                                    1:npc], evalues = ee$values[1:npc])
+                                                                                                    1:npc], evalues = ee$values[1:npc], vcov=vcov(ns1), par=ns1)
   }
 
   # check if data is dense or sparse (missing or not)
