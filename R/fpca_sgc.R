@@ -19,6 +19,8 @@
 #'       \item{evalues: }{first npc number of eigenvalues}
 #'       \item{latent: }{predictions of latent continuous trajectories, if \code{scores == TRUE}}
 #'       \item{scores: }{first npc number of PC scores, if \code{scores == TRUE}}
+#'       \item{par: }{Estimated parameters from the nls algorithm}
+#'       \item{vcov:}{Variance-covariance matrix of the estimatd parameters from the nls algorithm}
 #' }
 #' @references
 #' Dey D., Ghosal R., Merikangas K., Zipunnikov V. (2023) "Covariance Estimation and Principal Component Analysis for Mixed-Type Functional Data with application to mHealth in Mood Disorders" <https://arxiv.org/abs/2306.15084>
@@ -146,8 +148,8 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
     fjl.df <- function(j, l, data = X) {
       Tj = bs.argvals[j, ]
       Tl = bs.argvals[l, ]
-      zratioj = mean(data[, j] == 0)
-      zratiol = mean(data[, l] == 0)
+      zratioj = mean(data[, j] == 0, na.rm=TRUE)
+      zratiol = mean(data[, l] == 0, na.rm=TRUE)
       # count number of observations
       njl <- sum(!is.na(data[,j]*data[,l]))
 
