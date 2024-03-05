@@ -44,6 +44,8 @@ fpca.sgc.lat(
 \item{evalues: }{first npc number of eigenvalues}
 \item{latent: }{predictions of latent continuous trajectories, if \code{scores == TRUE}}
 \item{scores: }{first npc number of PC scores, if \code{scores == TRUE}}
+\item{par: }{Estimated parameters from the nls algorithm}
+\item{vcov:}{Variance-covariance matrix of the estimatd parameters from the nls algorithm}
 }
 }
 \description{
