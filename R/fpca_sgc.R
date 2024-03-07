@@ -7,6 +7,7 @@
 #' @param argvals A vector of length m denoting the argument values of the functions. If NULL, we default it to an equidistant grid from 0 to 1.
 #' @param df An integer denoting the degrees of freedom corresponding to the basis function.
 #' @param T_out If supplied, the estimated covariance and FPCA is returned on this grid of argument values (time-points)
+#' @param posd_tol If supplied, the posd_tol passed onto nearPD for nearest positive definite matrix
 #' @param min_no_pairs The minimum number of pairs of observations used to calculate Kendall's Tau (otherwise report NA)
 #' @param npc Prescribed value for the number of principal components. Defaults to 4.
 #' @param scores A logical variable indicating if the user wants to return FPC scores or not.
@@ -29,7 +30,7 @@
 #' @importFrom Matrix nearPD
 #' @example man/examples/fpca_sgc_ex.R
 
-fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scores = FALSE, impute=FALSE, min_no_pairs=30){
+fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scores = FALSE, impute=FALSE, min_no_pairs=30, posd_tol = 1e-08){
 
   # Check if X is a data frame or matrix
   if (!is.matrix(X)) {
@@ -227,7 +228,7 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
   Chat1 <- outer(argvals,argvals,Chat,u=uhat.nls, bs= bbasisT)
   Chat2 <- ginv(Chat1)
   diag(Chat2) <- 1
-  Chat.grid0 <- nearPD(Chat2,corr=TRUE,maxit=10000,posd.tol = 1e-02)$mat
+  Chat.grid0 <- nearPD(Chat2,corr=TRUE,maxit=10000,posd.tol = posd_tol)$mat
   Chat.grid <- Chat.grid0
   #Chat.grid.original <- Chat.grid2
   ee = eigen(Chat.grid)
@@ -248,7 +249,7 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
     Chat1 <- outer(T1,T1,Chat,u=uhat.nls,bs= bbasisT)
     Chat2 <- ginv(Chat1)
     diag(Chat2) <- 1
-    Chat.grid <- nearPD(Chat2,corr=TRUE,maxit=1000,posd.tol = 1e-02)$mat
+    Chat.grid <- nearPD(Chat2,corr=TRUE,maxit=1000,posd.tol = posd_tol)$mat
     #Chat.grid2 <- nearPD(Chat2,corr=TRUE,maxit=10000, posd.tol = 1e-03)$mat
     ee = eigen(Chat.grid)
     res = list(cov = as.matrix(Chat.grid0), cov_out = as.matrix(Chat.grid), efunctions = ee$vectors[,
