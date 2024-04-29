@@ -1,0 +1,130 @@
+---
+title: "Synthetic data analysis for the paper - Functional Principal Component Analysis for Continuous non-Gaussian, Truncated, and Discrete Functional Data"
+author: "Debangan Dey, Rahul Ghosal, Kathleen Merikangas, Vadim Zipunnikov"
+date: "2024-04-12"
+output: html_document  
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(SGCTools)
+library(tidyverse)
+library(mvtnorm)
+library(fda)
+```
+
+## Synthetic data creation
+
+Since, we are bound by data privacy agreeements, we can't release the NIMH Family Study dataset and present the actual analysis in RMarkdown format. Instead, we recreate a synthetic data set of mood ratings from the latent covariance estimated through our analysis. This shows that our method can transform the data from observed scale to latent scale and can also bring it back to the original scale. The synthetic data generation process can be broken down as follows:
+
+1. **Load results**: We load the estimated covariance from FSGC and the estimated cutoff points from the saved analysis.
+
+2. **Simulate latent data**: We simulate syntheic latent data from multivariate normal distribution using the covariance matrix estimated from our analysis.
+
+3. **Apply cutoffs**: We apply the estimated cutoffs from the analysis to truncate the generated latent data into observed scale to get mood ratings on a scale of 1-5. 
+
+
+```{r cars}
+# load the data
+load("Synthetic_da_prereq.RData")
+
+cov_fsgc = fsgc_res[[1]]
+cutoffs_mood = fsgc_res[[2]]
+
+# simulate data from latent FSGC covariance
+set.seed(123)
+Nsim = 2000
+m = 16
+XX = rmvnorm(Nsim, sigma = as.matrix(cov_fsgc))
+zz = sapply(1:ncol(XX),function(x){as.numeric(cut(XX[,x], breaks= cutoffs_mood[[x]]))})
+
+# introduce sparsity
+# define missing pattern
+z_sp = zz
+train_sample=list()
+train_prop=0.2
+for(i in 1:Nsim){
+  train_sample[[i]]=sample(1:m,m*train_prop)
+  z_sp[i,c(1:m)[-train_sample[[i]]]]=NA
+}
+z_orig = zz
+zz=z_sp
+
+# introduce subject  ID
+set.seed(1)
+ID_daylist = paste0(rep(c(1000:1450), each=14),"_", c(1:14))
+zz_df = data.frame(ID = sample(ID_daylist, size= Nsim), zz-1)
+names(zz_df) = c("ID_day", paste0("Hour", 7:22))
+
+# View the dataset
+head(zz_df,20)
+```
+
+## Run FSGC to get latent covariance
+
+
+```{r fsgc}
+fp = fpca.sgc.lat(as.matrix(zz_df[,-1]), type="ord",df=6)
+sigmat_FSGC2 = as.matrix(fp$cov)
+```
+
+## Get latent predictions 
+
+```{r latent}
+z_pred = getLatentPreds(as.matrix(zz_df[,-1]), type = rep("ord",m), lat.cov.est = fp$cov, impute.missing = TRUE)
+```
+
+## Plot true(data generating)and estimated latent covariance
+
+```{r est}
+library(fields)
+binmid2<-seq(7.5,22.5,l=16)
+binmid1<-seq(7.5,22.5,l=16) #define based on est dim
+colorTable<- designer.colors(19, c( "blue","white", "red" ) )
+brks<- seq(-1,1,l=20)
+par(mfrow=c(1,2))
+image.plot(binmid2,binmid2,as.matrix(cov_fsgc),breaks=brks, col=colorTable,xlab="Time of the Day", ylab = "Time of the Day",main="True",cex.lab=1.2,xaxt="n")
+xtick<-seq(8, 22, by=2)
+axis(side=1, at=xtick, labels = TRUE)
+
+#heatmap of estimated covariance
+image.plot(binmid2,binmid2,as.matrix(sigmat_FSGC2),breaks=brks, col=colorTable,xlab="Time of the Day", ylab = "Time of the Day",main="FSGC",cex.lab=1.2)
+```
+
+
+## Plot true(data generating)and estimated fPCs.
+
+```{r eigen}
+eg<-eigen(as.matrix(cov_fsgc)) #true
+eg2<-eigen(as.matrix(sigmat_FSGC2)) #do for estimate
+xtick<-seq(8, 22, by=2)
+par(mfrow=c(2,3))
+par(mar = c(4.9, 4.1, 4.1, 3))
+#use eg for true eg2 for estimate
+plot(binmid2,eg$vectors[,1],type="l",main="True PC1",ylab = "PC1",xlab="Time of the Day",xaxt="n",ylim=c(-0.6,0.6)) #more int
+axis(side=1, at=xtick, labels = TRUE)
+abline(h=c(0),col="grey",lty=2)
+abline(v=c(8,10,12,14,16,18,20,22),col="grey",lty=2)
+plot(binmid2,-eg$vectors[,2],type="l",main="True PC2",ylab = "PC2",xlab="Time of the Day",xaxt="n",ylim=c(-0.6,0.6))
+axis(side=1, at=xtick, labels = TRUE)
+abline(h=0,col="grey",lty=2)
+abline(v=c(8,10,12,14,16,18,20,22),col="grey",lty=2)
+plot(binmid2,-eg$vectors[,3],type="l",main="True PC3",ylab = "PC3",xlab="Time of the Day",xaxt="n",ylim=c(-0.6,0.6))
+axis(side=1, at=xtick, labels = TRUE)
+abline(h=0,col="grey",lty=2)
+abline(v=c(8,10,12,14,16,18,20,22),col="grey",lty=2)
+plot(binmid1,eg2$vectors[,1],type="l",main="FSGC estimated PC1",ylab = "PC1",xlab="Time of the Day",xaxt="n",ylim=c(-0.3,0.3)) #more int
+axis(side=1, at=xtick, labels = TRUE)
+abline(h=0,col="grey",lty=2)
+abline(v=c(8,10,12,14,16,18,20,22),col="grey",lty=2)
+plot(binmid1,-eg$vectors[,2],type="l",main="FSGC estimated PC2",ylab = "PC2",xlab="Time of the Day",xaxt="n",ylim=c(-0.4,0.4))
+axis(side=1, at=xtick, labels = TRUE)
+abline(h=0,col="grey",lty=2)
+abline(v=c(8,10,12,14,16,18,20,22),col="grey",lty=2)
+plot(binmid1,-eg$vectors[,3],type="l",main="FSGC estimated PC3",ylab = "PC3",xlab="Time of the Day",xaxt="n",ylim=c(-0.4,0.4))
+axis(side=1, at=xtick, labels = TRUE)
+abline(h=0,col="grey",lty=2)
+abline(v=c(8,10,12,14,16,18,20,22),col="grey",lty=2)
+
+
+```
