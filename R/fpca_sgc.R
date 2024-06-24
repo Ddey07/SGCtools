@@ -208,9 +208,9 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
   # run NLS optimization
   obj_df_cont = obj_df_cont[complete.cases(obj_df_cont),]
   if(weights==TRUE){
-  ns0 <- nls(eunsc_cont,data=obj_df_cont,start=init, control=list(printEval=TRUE,warnOnly=TRUE, tol = 1e-03, minFactor = 1/32))
+  ns0 <- nls(eunsc_cont,data=obj_df_cont,start=init, control=list(printEval=TRUE,warnOnly=TRUE, tol = 1e-03, minFactor = 1/32),weights= 1/obj_df_cont$njl)
   } else{
-    ns0 <- nls(eunsc_cont,data=obj_df_cont,start=init, control=list(printEval=TRUE,warnOnly=TRUE, tol = 1e-03, minFactor = 1/32), weights= 1/obj_df_cont$njl)
+    ns0 <- nls(eunsc_cont,data=obj_df_cont,start=init, control=list(printEval=TRUE,warnOnly=TRUE, tol = 1e-03, minFactor = 1/32))
   }
   ns1 <- ns0
 
@@ -225,9 +225,9 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
     # run NLS optimization
     obj_df = obj_df[complete.cases(obj_df),]
     if(weights==TRUE){
-    ns1 <- nlsLM(eunsc,data=obj_df,start=init, control=list(printEval=TRUE,warnOnly=TRUE, tol = 1e-03, minFactor = 1/32), trace = TRUE)
+    ns1 <- nlsLM(eunsc,data=obj_df,start=init, control=list(printEval=TRUE,warnOnly=TRUE, tol = 1e-03, minFactor = 1/32), trace = TRUE,  weights = 1/obj_df$njl)
     } else {
-      ns1 <- nlsLM(eunsc,data=obj_df,start=init, control=list(printEval=TRUE,warnOnly=TRUE, tol = 1e-03, minFactor = 1/32), trace = TRUE, weights = 1/obj_df$njl)
+      ns1 <- nlsLM(eunsc,data=obj_df,start=init, control=list(printEval=TRUE,warnOnly=TRUE, tol = 1e-03, minFactor = 1/32), trace = TRUE)
     }
   }
 
