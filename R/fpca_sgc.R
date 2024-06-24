@@ -12,6 +12,7 @@
 #' @param npc Prescribed value for the number of principal components. Defaults to 4.
 #' @param scores A logical variable indicating if the user wants to return FPC scores or not.
 #' @param impute A logical variable indicating whether missing values should be imputed before calculating FPC scores.
+#' @param weights A logical variable indicating whether objective function needs to be weighted inversely proportional to sample size for each pair
 #' @return \code{fpca.sgc.lat} returns
 #' \itemize{
 #'       \item{cov: }{the estimated m by m covariance matrix}
@@ -30,7 +31,7 @@
 #' @importFrom Matrix nearPD
 #' @example man/examples/fpca_sgc_ex.R
 
-fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scores = FALSE, impute=FALSE, min_no_pairs=30, posd_tol = 1e-08){
+fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scores = FALSE, impute=FALSE, min_no_pairs=30, weights = TRUE, posd_tol = 1e-08){
 
   # Check if X is a data frame or matrix
   if (!is.matrix(X)) {
@@ -89,16 +90,16 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
         tjl <- tryCatch(Kendall_mixed(cbind(data[,j],data[,l]))[1,2], error=function(e) NA)
 
 
-        return(c(k=tjl, Tj, Tl, dj= zratioj, dl= zratiol))}
+        return(c(k=tjl, Tj, Tl, dj= zratioj, dl= zratiol, njl = njl))}
       else{
-        return(c(k=NA, Tj, Tl, dj= zratioj, dl= zratiol))
+        return(c(k=NA, Tj, Tl, dj= zratioj, dl= zratiol, njl = njl))
       }
     }
 
     # fix bridging functions and create NLS formula
     bridgeF_bb_v <- Vectorize(bridgeF_bb,vectorize.args = c("r","zratio1","zratio2"))
     eunsc <- as.formula(paste0("k ~ ","bridgeF_bb_v(ginv(",spl.f, "), dj, dl)"))
-    obj_df_colnames <- c("k",paste0("Tj",1:ncol(bs.argvals)), paste0("Tl",1:ncol(bs.argvals)),"dj", "dl")
+    obj_df_colnames <- c("k",paste0("Tj",1:ncol(bs.argvals)), paste0("Tl",1:ncol(bs.argvals)),"dj", "dl","njl")
 
   } else if(type == "ord"){
     fjl.df <- function(j, l, data = X) {
@@ -123,9 +124,9 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
         tjl <- tryCatch(Kendall_mixed(cbind(data[,j],data[,l]))[1,2], error=function(e) NA)
 
 
-        return(c(k=tjl, Tj, Tl, hatdelta_j, hatdelta_l))}
+        return(c(k=tjl, Tj, Tl, hatdelta_j, hatdelta_l, njl = njl))}
       else{
-        return(c(k=NA, Tj, Tl, hatdelta_j, hatdelta_l))
+        return(c(k=NA, Tj, Tl, hatdelta_j, hatdelta_l, njl = njl))
       }
     }
 
@@ -143,7 +144,7 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
     eunsc <- as.formula(paste0("k ~ ","bridgeF_oo_v(ginv(",spl.f, "),",
                                paste(paste(paste0("dj",1:ncutoff),"=",paste0("dj",1:ncutoff),collapse=","),", ",
                                      paste(paste0("dl",1:ncutoff),"=",paste0("dl",1:ncutoff),collapse=",")),")"))
-    obj_df_colnames <- c("k", paste0("Tj",1:ncol(bs.argvals)), paste0("Tl",1:ncol(bs.argvals)),paste0("dj",1:ncutoff), paste0("dl",1:ncutoff))
+    obj_df_colnames <- c("k", paste0("Tj",1:ncol(bs.argvals)), paste0("Tl",1:ncol(bs.argvals)),paste0("dj",1:ncutoff), paste0("dl",1:ncutoff),"njl")
 
   } else if (type == "trunc"){
     fjl.df <- function(j, l, data = X) {
@@ -159,16 +160,16 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
         tjl <- tryCatch(Kendall_mixed(cbind(data[,j],data[,l]))[1,2], error=function(e) NA)
 
 
-        return(c(k=tjl, Tj, Tl, dj= zratioj, dl= zratiol))}
+        return(c(k=tjl, Tj, Tl, dj= zratioj, dl= zratiol, njl = njl))}
       else{
-        return(c(k=NA, Tj, Tl, dj= zratioj, dl= zratiol))
+        return(c(k=NA, Tj, Tl, dj= zratioj, dl= zratiol, njl = njl))
       }
     }
 
     # fix bridging functions and create NLS formula
     bridgeF_tt_v <- Vectorize(bridgeF_tt,vectorize.args = c("r","zratio1","zratio2"))
     eunsc <- as.formula(paste0("k ~ ","bridgeF_tt_v(ginv(",spl.f, "), dj, dl)"))
-    obj_df_colnames <- c("k",paste0("Tj",1:ncol(bs.argvals)), paste0("Tl",1:ncol(bs.argvals)),"dj", "dl")
+    obj_df_colnames <- c("k",paste0("Tj",1:ncol(bs.argvals)), paste0("Tl",1:ncol(bs.argvals)),"dj", "dl","njl")
 
   }
 
@@ -184,16 +185,16 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
       tjl <- tryCatch(Kendall_mixed(cbind(data[,j],data[,l]))[1,2], error=function(e) NA)
 
 
-      return(c(k=tjl, Tj, Tl))}
+      return(c(k=tjl, Tj, Tl, njl = njl))}
     else{
-      return(c(k=NA, Tj, Tl))
+      return(c(k=NA, Tj, Tl, njl = njl))
     }
   }
 
   # continuous bridging function
   bridgeF_cc_v <- Vectorize(bridgeF_cc,vectorize.args = c("r"))
   eunsc_cont <- as.formula(paste0("k ~ ","bridgeF_cc_v(ginv(",spl.f, "))"))
-  obj_df_colnames_cont <- c("k",paste0("Tj",1:ncol(bs.argvals)), paste0("Tl",1:ncol(bs.argvals)))
+  obj_df_colnames_cont <- c("k",paste0("Tj",1:ncol(bs.argvals)), paste0("Tl",1:ncol(bs.argvals)), "njl")
 
   obj_df_cont <- data.frame(t(sapply(1:ncol(cmb), function(x){res = fjl.df.cont(cmb[1,x],cmb[2,x],data=X); if(is.na(res[1])){res = rep(NA,length(obj_df_colnames_cont))}; return(res)})))
   names(obj_df_cont) <- obj_df_colnames_cont
@@ -205,7 +206,12 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
   names(init) <-  outer(1:df,1:df,formula.start)[lower.tri(outer(1:df,1:df,formula.start),diag=TRUE)]
 
   # run NLS optimization
-  ns0 <- nls(eunsc_cont,data=obj_df_cont[complete.cases(obj_df_cont),],start=init, control=list(printEval=TRUE,warnOnly=TRUE, tol = 1e-03, minFactor = 1/32))
+  obj_df_cont = obj_df_cont[complete.cases(obj_df_cont),]
+  if(weights==TRUE){
+  ns0 <- nls(eunsc_cont,data=obj_df_cont,start=init, control=list(printEval=TRUE,warnOnly=TRUE, tol = 1e-03, minFactor = 1/32))
+  } else{
+    ns0 <- nls(eunsc_cont,data=obj_df_cont,start=init, control=list(printEval=TRUE,warnOnly=TRUE, tol = 1e-03, minFactor = 1/32), weights= 1/obj_df_cont$njl)
+  }
   ns1 <- ns0
 
   if (type != "cont"){
@@ -217,7 +223,12 @@ fpca.sgc.lat = function(X, type,argvals=NULL, df = 5, T_out= NULL, npc = 4, scor
     init <- coef(summary(ns0))[,1]
 
     # run NLS optimization
-    ns1 <- nlsLM(eunsc,data=obj_df[complete.cases(obj_df),],start=init, control=list(printEval=TRUE,warnOnly=TRUE, tol = 1e-03, minFactor = 1/32), trace = TRUE)
+    obj_df = obj_df[complete.cases(obj_df),]
+    if(weights==TRUE){
+    ns1 <- nlsLM(eunsc,data=obj_df,start=init, control=list(printEval=TRUE,warnOnly=TRUE, tol = 1e-03, minFactor = 1/32), trace = TRUE)
+    } else {
+      ns1 <- nlsLM(eunsc,data=obj_df,start=init, control=list(printEval=TRUE,warnOnly=TRUE, tol = 1e-03, minFactor = 1/32), trace = TRUE, weights = 1/obj_df$njl)
+    }
   }
 
   uhat.nls <- matrix(ncol=df,nrow=df)

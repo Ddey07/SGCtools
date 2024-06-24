@@ -14,6 +14,7 @@ fpca.sgc.lat(
   scores = FALSE,
   impute = FALSE,
   min_no_pairs = 30,
+  weights = TRUE,
   posd_tol = 1e-08
 )
 }
@@ -35,6 +36,8 @@ fpca.sgc.lat(
 \item{impute}{A logical variable indicating whether missing values should be imputed before calculating FPC scores.}
 
 \item{min_no_pairs}{The minimum number of pairs of observations used to calculate Kendall's Tau (otherwise report NA)}
+
+\item{weights}{A logical variable indicating whether objective function needs to be weighted inversely proportional to sample size for each pair}
 
 \item{posd_tol}{If supplied, the posd_tol passed onto nearPD for nearest positive definite matrix}
 }
